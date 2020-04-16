@@ -10,7 +10,7 @@ def t_format(t_number):
         m = '0'+m
     return h+':'+m
 
-def fetch_input(path):
+def fetch_input(path):      # Возвращает два списка: времён входа и времён выхода
     enter_times, exit_times = [], []
     with open(path) as f:
         text = f.read()
@@ -21,7 +21,7 @@ def fetch_input(path):
     return enter_times, exit_times
 
 def find_maxcust_intervals(enter_times, exit_times):
-    temp = {}
+    temp = {}               # Предварительный словарь для пар время : дельта (изменение числа посетителей)
     for t in enter_times:
         if t in temp:
             temp[t] += 1
@@ -33,24 +33,24 @@ def find_maxcust_intervals(enter_times, exit_times):
         else:
             temp[t] = -1
     #
-    deltas = {}
+    deltas = {}              # Отфильтрованный словарь дельт
     for t in temp:
         v = temp[t]
         if not (v == 0):
             deltas[t] = v
     #
-    maxval = 0
-    curval = 0
+    maxval = 0               # Максимум числа посетителей
+    curval = 0               # "Нынешнее" число посетителей по таймлайну
     res = []
-    for t, d in sorted(deltas.items(), key = lambda x: x[0]):
+    for t, d in sorted(deltas.items(), key = lambda x: x[0]): # Пары сортируются по времени
         if d > 0:
-            start_cand = t
+            start_cand = t                                    # Начальная отметка интервала-кандидата
         else:
-            if curval == maxval:
-                res.append((start_cand, t))
-            elif curval > maxval:
-                res = [(start_cand, t)]
-                maxval = curval
+            if curval == maxval:                              # Если число посетителей равно бывшему максимуму,
+                res.append((start_cand, t))                   # новый интервал-кандидат добавляется в список
+            elif curval > maxval:                             # Если число посетителей выше бывшего максимума,
+                res = [(start_cand, t)]                       # список сбрасывается, добавляется интервал-кандидат,
+                maxval = curval                               # а максимум обновляется
         curval += d
     #
     for line in res:
